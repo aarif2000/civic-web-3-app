@@ -158,7 +158,7 @@ function AppContent() {
             <UserButton />
             {userContext.user && userHasWallet(userContext) && (
               <div className="card-body">
-                <h2 className="card-title">🪪 Your DeFi Business Card</h2>
+                <h2 className="card-title">Your DeFi Business Card</h2>
                 <p><strong>Name:</strong> DeFi Builder #{address?.slice(-4)}</p>
                 <p><strong>Wallet:</strong> <code>{address}</code></p>
                 <p><strong>Balance:</strong> {
