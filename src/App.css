@@ -96,3 +96,10 @@ strong {
 .connect-btn:hover {
   background-color: #0097a7;
 }
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
