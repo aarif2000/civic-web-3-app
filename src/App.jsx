@@ -16,11 +16,10 @@ import { mainnet, sepolia } from 'viem/chains';
 import { userHasWallet } from '@civic/auth-web3';
 import { useAutoConnect } from '@civic/auth-web3/wagmi';
 import LandingPageLayout from './LandingPageLayout';
+import html2canvas from 'html2canvas';  
 
-// Create query client for React Query
 const queryClient = new QueryClient();
 
-// Setup Wagmi configuration
 const wagmiConfig = createConfig({
   chains: [mainnet, sepolia],
   transports: {
@@ -30,19 +29,16 @@ const wagmiConfig = createConfig({
   connectors: [embeddedWallet()],
 });
 
-// Function to create wallet if not existing
 const createWallet = async (userContext) => {
   if (userContext && userContext.user && !userHasWallet(userContext)) {
     await userContext.createWallet();
   }
 };
 
-// Function to connect existing wallet
 const connectExistingWallet = async (connectors, connect) => {
   await connect({ connector: connectors[0] });
 };
 
-// Navbar Component
 function Navbar({ onWalletClick, onBusinessCardClick, onSignOutClick, onSignInClick, isLoggedIn }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -57,9 +53,8 @@ function Navbar({ onWalletClick, onBusinessCardClick, onSignOutClick, onSignInCl
               <button className="btn btn-primary" onClick={onWalletClick}>My Wallet</button>
             </li>
             <li className="nav-item">
-              <button className="btn btn-secondary" onClick={onBusinessCardClick}>Generate Your Business Card</button>
+              <button className="btn btn-secondary ms-2" onClick={onBusinessCardClick}>Generate Your Business Card</button>
             </li>
-         
           </ul>
         </div>
       </div>
@@ -67,9 +62,8 @@ function Navbar({ onWalletClick, onBusinessCardClick, onSignOutClick, onSignInCl
   );
 }
 
-// Main App Content Component
 function AppContent() {
-  const [view, setView] = useState('wallet');  // 'wallet' or 'business-card'
+  const [view, setView] = useState('wallet'); 
   const userContext = useUser();
   const { isConnected, address } = useAccount();
   const { connectors, connect, disconnect } = useConnect();
@@ -98,20 +92,38 @@ function AppContent() {
 
   const handleSignOutClick = () => {
     if (userContext) {
-      userContext.signOut();  // Sign out from CivicAuth
+      userContext.signOut(); 
     }
-    disconnect();  // Disconnect wallet using Wagmi
-    setIsLoggedIn(false);  // Update login status
-    setView('wallet');  // Reset view to wallet after sign-out
+    disconnect(); 
+    setIsLoggedIn(false); 
+    setView('wallet'); 
   };
 
   const handleSignInClick = async () => {
     if (!userContext.user) {
       try {
-        await userContext.signIn(); // Trigger the CivicAuth sign-in prompt
+        await userContext.signIn();
       } catch (error) {
         console.error('Sign-In Error:', error);
       }
+    }
+  };
+
+  const handleDownload = () => {
+    const cardElement = document.getElementById('business-card');
+    const buttons = document.querySelectorAll('.btn');
+    
+    buttons.forEach(button => button.style.display = 'none');
+    
+    if (cardElement) {
+      html2canvas(cardElement).then((canvas) => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'defi_business_card.png';
+        link.click();
+        
+        buttons.forEach(button => button.style.display = 'inline-block');
+      });
     }
   };
 
@@ -154,7 +166,7 @@ function AppContent() {
         )}
 
         {view === 'business-card' && (
-          <div className="card p-4">
+          <div className="card p-4" id="business-card">
             <UserButton />
             {userContext.user && userHasWallet(userContext) && (
               <div className="card-body">
@@ -173,6 +185,9 @@ function AppContent() {
                     <button className="btn btn-success mt-3" onClick={() => window.print()}>
                       🖨️ Print or Save
                     </button>
+                    <button className="btn btn-info mt-3 ms-2" onClick={handleDownload}>
+                      ⬇️ Download Business Card
+                    </button>
                   </>
                 ) : null}
               </div>
@@ -184,7 +199,6 @@ function AppContent() {
   );
 }
 
-// Main App Component (Including providers and layout)
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
