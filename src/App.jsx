@@ -143,7 +143,7 @@ function AppContent() {
             {!isLoggedIn ? (
               <div className="card-body">
                 <h2 className="card-title">Please Sign In</h2>
-                <p>To view your wallet, you need to sign in first.</p>
+                <p>To Generate Your Business Card, you need to sign in first.</p>
               </div>
             ) : (
               userContext.user && userHasWallet(userContext) && (
