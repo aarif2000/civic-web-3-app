@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react';
 import { UserButton, useUser, CivicAuthProvider } from '@civic/auth-web3/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, useAccount, useConnect, useBalance, http } from 'wagmi';
+import {
+  WagmiProvider,
+  createConfig,
+  useAccount,
+  useConnect,
+  useBalance,
+  http
+} from 'wagmi';
 import { embeddedWallet } from '@civic/auth-web3/wagmi';
 import { mainnet, sepolia } from 'viem/chains';
 import { userHasWallet } from '@civic/auth-web3';
@@ -36,7 +43,7 @@ function AppContent() {
   const { connectors, connect } = useConnect();
   const balance = useBalance({ address });
 
-  // ✅ Automatically create wallet after signup/login
+  // Automatically create wallet after login
   useEffect(() => {
     if (userContext.user && !userHasWallet(userContext)) {
       createWallet(userContext);
@@ -45,23 +52,43 @@ function AppContent() {
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>Civic Web3 Poll App</h1>
+      <h1>Web3 Business Card Generator</h1>
       <UserButton />
-      
-      {userContext.user && (
-        <div>
-          {userHasWallet(userContext) && (
+
+      {userContext.user && userHasWallet(userContext) && (
+        <div style={{
+          border: '1px solid #ccc',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          maxWidth: '420px',
+          marginTop: '2rem',
+          backgroundColor: '#ffffff',
+          boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
+        }}>
+          <h2>🪪 Your Web3 Business Card</h2>
+          <p><strong>Name:</strong> Solana Explorer #{address?.slice(-4)}</p>
+          <p><strong>Wallet:</strong> {address}</p>
+          <p><strong>Balance:</strong> {
+            balance?.data
+              ? `${(BigInt(balance.data.value) / BigInt(1e18)).toString()} ${balance.data.symbol}`
+              : 'Loading...'
+          }</p>
+
+          {!isConnected && (
+            <button
+              onClick={() => connectExistingWallet(connectors, connect)}
+              style={{ marginTop: '1rem' }}
+            >
+              Connect Wallet
+            </button>
+          )}
+
+          {isConnected && (
             <>
-              <p><strong>Wallet address:</strong> {userContext.ethereum.address}</p>
-              <p><strong>Balance:</strong> {
-                balance?.data
-                  ? `${(BigInt(balance.data.value) / BigInt(1e18)).toString()} ${balance.data.symbol}`
-                  : 'Loading...'
-              }</p>
-              {!isConnected && (
-                <button onClick={() => connectExistingWallet(connectors, connect)}>Connect Wallet</button>
-              )}
-              {isConnected && <p>✅ Wallet is connected</p>}
+              <p>✅ Wallet is connected</p>
+              <button onClick={() => window.print()} style={{ marginTop: '1rem' }}>
+                🖨️ Print or Save Business Card
+              </button>
             </>
           )}
         </div>
