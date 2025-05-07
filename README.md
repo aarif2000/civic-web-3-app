@@ -14,6 +14,12 @@ A Web3 business card generator built with **Civic Auth** that enables users to s
 
 ---
 
+## 🚀 Demo Video
+
+🎥 [Watch the demo here](https://youtu.be/ujODShHZLEw?si=iSEkjwCPSkVS7Clo)
+
+---
+
 ## 📦 How to Run Locally
 
 ```bash
@@ -28,4 +34,4 @@ npm install
 npm run dev
 
 # 4. Open the app in your browser
-localhost:5173
+http://localhost:5173
